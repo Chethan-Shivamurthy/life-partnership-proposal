@@ -3,132 +3,178 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Incoming Transmission...</title>
+    <title>SECURE_CONNECTION_ESTABLISHED</title>
     <style>
         :root {
-            --neon-green: #00ff41;
-            --dark-bg: #0d0d0d;
+            --neon-pink: #ff007f;
+            --neon-blue: #00f3ff;
+            --bg-black: #050505;
         }
 
-        body {
-            background-color: var(--dark-bg);
-            color: var(--neon-green);
-            font-family: 'Courier New', Courier, monospace;
+        body, html {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            background-color: var(--bg-black);
+            font-family: 'Fira Code', 'Courier New', monospace;
+            overflow: hidden;
             display: flex;
             justify-content: center;
             align-items: center;
-            height: 100vh;
-            margin: 0;
-            overflow: hidden;
         }
 
-        #container {
+        /* Matrix Background */
+        #matrix {
+            position: fixed;
+            top: 0;
+            left: 0;
+            z-index: 0;
+        }
+
+        #content-wrapper {
+            position: relative;
+            z-index: 1;
+            background: rgba(13, 13, 13, 0.85);
+            padding: 40px;
+            border: 1px solid var(--neon-blue);
+            box-shadow: 0 0 20px var(--neon-blue);
             text-align: center;
-            max-width: 80%;
+            max-width: 600px;
+            border-radius: 8px;
         }
 
-        h1 {
-            font-size: 2.5rem;
-            text-shadow: 0 0 10px var(--neon-green);
+        .terminal-header {
+            color: var(--neon-blue);
+            font-size: 0.9rem;
+            margin-bottom: 20px;
+            border-bottom: 1px solid #333;
+            padding-bottom: 5px;
+            text-align: left;
         }
 
-        .buttons {
-            margin-top: 50px;
-            display: flex;
-            justify-content: center;
-            gap: 20px;
-        }
+        h1 { color: var(--neon-pink); font-size: 2rem; }
+        p { color: white; line-height: 1.6; font-size: 1.1rem; }
 
-        button {
-            padding: 15px 30px;
-            font-size: 1.2rem;
-            font-family: inherit;
-            cursor: pointer;
-            border: 2px solid var(--neon-green);
-            background: transparent;
-            color: var(--neon-green);
-            transition: 0.3s;
+        .btn-container {
+            margin-top: 30px;
+            height: 60px;
             position: relative;
         }
 
+        button {
+            padding: 12px 35px;
+            font-family: inherit;
+            font-weight: bold;
+            text-transform: uppercase;
+            cursor: pointer;
+            background: transparent;
+            transition: 0.3s;
+        }
+
+        #yesBtn {
+            border: 2px solid var(--neon-pink);
+            color: var(--neon-pink);
+        }
+
         #yesBtn:hover {
-            background-color: var(--neon-green);
-            color: black;
-            box-shadow: 0 0 20px var(--neon-green);
+            background: var(--neon-pink);
+            color: white;
+            box-shadow: 0 0 30px var(--neon-pink);
         }
 
         #noBtn {
+            border: 2px solid #555;
+            color: #555;
             position: absolute;
         }
 
-        #message {
-            font-size: 1.5rem;
-            line-height: 1.6;
-            margin-bottom: 20px;
-        }
-
-        .hidden {
-            display: none;
-        }
+        .hidden { display: none; }
     </style>
 </head>
 <body>
 
-    <div id="container">
-        <div id="terminal">
-            <p id="typedText"></p>
-        </div>
+<canvas id="matrix"></canvas>
 
-        <div id="proposalContent" class="hidden">
-            <h1>Execute: Life_Partnership.exe?</h1>
-            <p id="message">I've debugged my life and found that the only thing missing is YOU. <br> Will you upgrade my world and be my partner forever?</p>
-            <div class="buttons">
-                <button id="yesBtn" onclick="celebrate()">YES</button>
-                <button id="noBtn">NO</button>
-            </div>
-        </div>
+<div id="content-wrapper">
+    <div class="terminal-header">root@heart:~/proposal_folder$ sudo run life_exec.sh</div>
+    
+    <div id="loading-zone">
+        <p id="typedText"></p>
     </div>
 
-    <script>
-        const text = "System Initialization... \n Accessing heart_database... \n Match Found: [Insert Her Name]... \n Preparing Proposal Protocol...";
-        let i = 0;
-        const speed = 50;
+    <div id="proposal-zone" class="hidden">
+        <h1>Critical Update Found</h1>
+        <p>User: <strong>Payal Agarwal</strong><br><br>
+        Payal, you are the <strong>Master Branch</strong> of my life. My heart has been running a background process for a while now, and the output is clear: I want to commit my life to yours.<br><br>
+        <strong>Will you merge with me and build a beautiful future together?</strong></p>
+        
+        <div class="btn-container">
+            <button id="yesBtn" onclick="celebrate()">Yes (Merge)</button>
+            <button id="noBtn">No (404)</button>
+        </div>
+    </div>
+</div>
 
-        function typeWriter() {
-            if (i < text.length) {
-                document.getElementById("typedText").innerHTML += text.charAt(i) === '\n' ? '<br>' : text.charAt(i);
-                i++;
-                setTimeout(typeWriter, speed);
-            } else {
-                setTimeout(() => {
-                    document.getElementById("terminal").classList.add("hidden");
-                    document.getElementById("proposalContent").classList.remove("hidden");
-                }, 1000);
-            }
+<script>
+    // Matrix Effect
+    const canvas = document.getElementById('matrix');
+    const ctx = canvas.getContext('2d');
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+    const letters = "01PAYALAGARWAL0101LOVE01";
+    const fontSize = 16;
+    const columns = canvas.width / fontSize;
+    const drops = Array(Math.floor(columns)).fill(1);
+
+    function drawMatrix() {
+        ctx.fillStyle = "rgba(0, 0, 0, 0.05)";
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        ctx.fillStyle = "#00f3ff";
+        ctx.font = fontSize + "px monospace";
+        for (let i = 0; i < drops.length; i++) {
+            const text = letters.charAt(Math.floor(Math.random() * letters.length));
+            ctx.fillText(text, i * fontSize, drops[i] * fontSize);
+            if (drops[i] * fontSize > canvas.height && Math.random() > 0.975) drops[i] = 0;
+            drops[i]++;
         }
+    }
+    setInterval(drawMatrix, 35);
 
-        // The Runaway "No" Button Logic
-        const noBtn = document.getElementById('noBtn');
-        noBtn.addEventListener('mouseover', () => {
-            const x = Math.random() * (window.innerWidth - noBtn.offsetWidth);
-            const y = Math.random() * (window.innerHeight - noBtn.offsetHeight);
-            noBtn.style.left = `${x}px`;
-            noBtn.style.top = `${y}px`;
-        });
-
-        function celebrate() {
-            document.body.innerHTML = `
-                <div style="text-align:center;">
-                    <h1 style="font-size:4rem;">SUCCESS!</h1>
-                    <p style="font-size:2rem;">Status: Engaged. <br> I love you! ❤️</p>
-                    <div class="pyro"></div>
-                </div>
-            `;
-            document.body.style.backgroundColor = "#ffc0cb";
-            document.body.style.color = "#d02090";
+    // Typewriter
+    const msg = "Initializing connection...\nAuth Success: Payal Agarwal recognized.\nOptimizing heart_rate.sys...\nChecking compatibility... 100%.\nLaunching Proposal Module...";
+    let i = 0;
+    function type() {
+        if (i < msg.length) {
+            document.getElementById("typedText").innerHTML += msg.charAt(i) === '\n' ? '<br>' : msg.charAt(i);
+            i++;
+            setTimeout(type, 40);
+        } else {
+            setTimeout(() => {
+                document.getElementById("loading-zone").classList.add("hidden");
+                document.getElementById("proposal-zone").classList.remove("hidden");
+            }, 1000);
         }
+    }
+    type();
 
-        window.onload = typeWriter;
-    </script>
+    // Runaway No Button
+    const noBtn = document.getElementById('noBtn');
+    noBtn.addEventListener('mouseover', () => {
+        const x = Math.random() * (window.innerWidth - 150);
+        const y = Math.random() * (window.innerHeight - 50);
+        noBtn.style.left = `${x - canvas.offsetLeft}px`;
+        noBtn.style.top = `${y - canvas.offsetTop}px`;
+    });
+
+    function celebrate() {
+        document.getElementById('content-wrapper').innerHTML = `
+            <h1 style="font-size:3rem;">COMMIT SUCCESSFUL!</h1>
+            <p style="font-size:1.5rem;">Branch 'Me' successfully merged into 'Us'.<br>I love you infinitely, Payal! ❤️</p>
+        `;
+        document.getElementById('content-wrapper').style.borderColor = "#ff007f";
+    }
+</script>
+
 </body>
 </html>
