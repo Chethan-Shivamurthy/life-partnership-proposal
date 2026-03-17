@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Incoming Transmission...</title>
+    <style>
+        :root {
+            --neon-green: #00ff41;
+            --dark-bg: #0d0d0d;
+        }
+
+        body {
+            background-color: var(--dark-bg);
+            color: var(--neon-green);
+            font-family: 'Courier New', Courier, monospace;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            overflow: hidden;
+        }
+
+        #container {
+            text-align: center;
+            max-width: 80%;
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            text-shadow: 0 0 10px var(--neon-green);
+        }
+
+        .buttons {
+            margin-top: 50px;
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+        }
+
+        button {
+            padding: 15px 30px;
+            font-size: 1.2rem;
+            font-family: inherit;
+            cursor: pointer;
+            border: 2px solid var(--neon-green);
+            background: transparent;
+            color: var(--neon-green);
+            transition: 0.3s;
+            position: relative;
+        }
+
+        #yesBtn:hover {
+            background-color: var(--neon-green);
+            color: black;
+            box-shadow: 0 0 20px var(--neon-green);
+        }
+
+        #noBtn {
+            position: absolute;
+        }
+
+        #message {
+            font-size: 1.5rem;
+            line-height: 1.6;
+            margin-bottom: 20px;
+        }
+
+        .hidden {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+
+    <div id="container">
+        <div id="terminal">
+            <p id="typedText"></p>
+        </div>
+
+        <div id="proposalContent" class="hidden">
+            <h1>Execute: Life_Partnership.exe?</h1>
+            <p id="message">I've debugged my life and found that the only thing missing is YOU. <br> Will you upgrade my world and be my partner forever?</p>
+            <div class="buttons">
+                <button id="yesBtn" onclick="celebrate()">YES</button>
+                <button id="noBtn">NO</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const text = "System Initialization... \n Accessing heart_database... \n Match Found: [Insert Her Name]... \n Preparing Proposal Protocol...";
+        let i = 0;
+        const speed = 50;
+
+        function typeWriter() {
+            if (i < text.length) {
+                document.getElementById("typedText").innerHTML += text.charAt(i) === '\n' ? '<br>' : text.charAt(i);
+                i++;
+                setTimeout(typeWriter, speed);
+            } else {
+                setTimeout(() => {
+                    document.getElementById("terminal").classList.add("hidden");
+                    document.getElementById("proposalContent").classList.remove("hidden");
+                }, 1000);
+            }
+        }
+
+        // The Runaway "No" Button Logic
+        const noBtn = document.getElementById('noBtn');
+        noBtn.addEventListener('mouseover', () => {
+            const x = Math.random() * (window.innerWidth - noBtn.offsetWidth);
+            const y = Math.random() * (window.innerHeight - noBtn.offsetHeight);
+            noBtn.style.left = `${x}px`;
+            noBtn.style.top = `${y}px`;
+        });
+
+        function celebrate() {
+            document.body.innerHTML = `
+                <div style="text-align:center;">
+                    <h1 style="font-size:4rem;">SUCCESS!</h1>
+                    <p style="font-size:2rem;">Status: Engaged. <br> I love you! ❤️</p>
+                    <div class="pyro"></div>
+                </div>
+            `;
+            document.body.style.backgroundColor = "#ffc0cb";
+            document.body.style.color = "#d02090";
+        }
+
+        window.onload = typeWriter;
+    </script>
+</body>
+</html>
